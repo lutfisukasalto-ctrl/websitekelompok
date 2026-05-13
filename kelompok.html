@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Management Pro - Game Perhotelan</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.4); }
+        }
+
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== PAGE CONTAINERS ===== */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== OPENING PAGE ===== */
+        .opening-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            z-index: -1;
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .hotel-icon {
+            font-size: 120px;
+            animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: #ffd700;
+            margin-bottom: 40px;
+            text-align: center;
+            animation: bounce 2s infinite;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1e3c72;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(255,215,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255,215,0,0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        /* ===== MENU PAGE ===== */
+        .menu-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .menu-title {
+            font-size: 2.5rem;
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .menu-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ffd700;
+            box-shadow: 0 15px 40px rgba(102,126,234,0.4);
+        }
+
+        .menu-card .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .menu-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .menu-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .diff-btn {
+            padding: 12px 30px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .diff-btn.active, .diff-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* ===== GAME PAGE ===== */
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .score-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .score-display span {
+            color: #ffd700;
+            font-size: 2rem;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .question-container {
+            margin: 30px 0;
+        }
+
+        .scenario-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .scenario-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .scenario-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+        }
+
+        .option-btn .opt-letter {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .option-btn.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            animation: pulse 0.5s;
+        }
+
+        .option-btn.correct .opt-letter {
+            background: #28a745;
+        }
+
+        .option-btn.wrong {
+            border-color: #dc3545;
+            background: #f8d7da;
+            animation: shake 0.5s;
+        }
+
+        .option-btn.wrong .opt-letter {
+            background: #dc3545;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* ===== FEEDBACK PAGE ===== */
+        .feedback-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s;
+        }
+
+        .feedback-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .feedback-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feedback-title.correct {
+            color: #28a745;
+        }
+
+        .feedback-title.wrong {
+            color: #dc3545;
+        }
+
+        .feedback-message {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .points-earned {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin: 20px 0;
+            animation: starPop 0.6s ease-out;
+        }
+
+        .explanation-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            border-left: 4px solid #667eea;
+        }
+
+        .explanation-box h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+
+        /* ===== RESULT PAGE ===== */
+        .result-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .trophy {
+            font-size: 120px;
+            animation: float 3s ease-in-out infinite, glow 2s infinite;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #1e3c72;
+            margin: 20px 0;
+        }
+
+        .final-score span {
+            color: #ffd700;
+        }
+
+        .rating-stars {
+            font-size: 50px;
+            margin: 20px 0;
+        }
+
+        .rating-stars .star-rating {
+            display: inline-block;
+            animation: starPop 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 3px solid #667eea;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti 3s ease-out forwards;
+        }
+
+        /* Timer */
+        .timer-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+        }
+
+        .timer-circle {
+            fill: none;
+            stroke: #eee;
+            stroke-width: 4;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke: #667eea;
+            stroke-width: 4;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title { font-size: 2.5rem; }
+            .menu-container, .game-container, .feedback-container, .result-container {
+                padding: 30px 20px;
+            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .game-header { flex-direction: column; text-align: center; }
+        }
+
+        /* Hotel decorations */
+        .hotel-decoration {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 150'%3E%3Cpath d='M0,150 L0,100 Q50,80 100,100 T200,100 T300,100 T400,100 T500,100 T600,100 T700,100 T800,100 T900,100 T1000,100 T1100,100 T1200,100 L1200,150 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") bottom center no-repeat;
+            background-size: cover;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-icons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .float-icon {
+            position: absolute;
+            font-size: 30px;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="opening-bg" id="bgElement"></div>
+    <div class="stars" id="starsContainer"></div>
+    <div class="floating-icons" id="floatingIcons"></div>
+    <div class="hotel-decoration"></div>
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- ===== PAGE 1: OPENING ===== -->
+    <div class="page active" id="pageOpening">
+        <div class="hotel-icon">🏨</div>
+        <h1 class="game-title">Hotel Management Pro</h1>
+        <p class="game-subtitle">Uji Kemampuan Manajemen Perhotelanmu!</p>
+        <button class="btn-primary" id="btnStart" onclick="goToMenu()">
+            🎮 Mulai Bermain
+        </button>
+        <p style="margin-top: 30px; color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+            Klik tombol di atas untuk memulai petualangan hotelmu
+        </p>
+    </div>
+
+    <!-- ===== PAGE 2: MENU ===== -->
+    <div class="page" id="pageMenu">
+        <div class="menu-container">
+            <h2 class="menu-title">🏨 Pilih Mode Permainan</h2>
+
+            <div class="difficulty-selector">
+                <button class="diff-btn active" id="diffEasy" onclick="setDifficulty('easy')">🟢 Mudah</button>
+                <button class="diff-btn" id="diffMedium" onclick="setDifficulty('medium')">🟡 Menengah</button>
+                <button class="diff-btn" id="diffHard" onclick="setDifficulty('hard')">🔴 Sulit</button>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startGame('checkin')">
+                    <span class="icon">🛎️</span>
+                    <h3>Check-in/Out</h3>
+                    <p>Tangani proses kedatangan & kepergian tamu</p>
+                </div>
+                <div class="menu-card" onclick="startGame('service')">
+                    <span class="icon">🍽️</span>
+                    <h3>Layanan Hotel</h3>
+                    <p>Kelola restoran, kamar, & fasilitas</p>
+                </div>
+                <div class="menu-card" onclick="startGame('emergency')">
+                    <span class="icon">🚨</span>
+                    <h3>Situasi Darurat</h3>
+                    <p>Tangani masalah & keluhan tamu</p>
+                </div>
+                <div class="menu-card" onclick="startGame('mixed')">
+                    <span class="icon">🎯</span>
+                    <h3>Campuran</h3>
+                    <p>Semua tantangan dalam satu game</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-outline" onclick="goToOpening()">← Kembali</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE 3: GAME ===== -->
+    <div class="page" id="pageGame">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="score-display">
+                    ⭐ Skor: <span id="currentScore">0</span>
+                </div>
+                <div style="text-align: center;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <small style="color: #666;">Soal <span id="questionNum">1</span>/<span id="totalQuestions">5</span></small>
+                </div>
+                <div class="timer-container">
+                    <svg class="timer-svg" width="80" height="80">
+                        <circle class="timer-circle" cx="40" cy="40" r="35"></circle>
+                        <circle class="timer-progress" id="timerCircle" cx="40" cy="40" r="35" 
+                            stroke-dasharray="220" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="timer-text" id="timerText">30</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="scenario-box">
+                    <div class="scenario-icon" id="scenarioIcon">🛎️</div>
+                    <div class="scenario-text" id="scenarioText">
+                        Memuat skenario...
+                    </div>
+                </div>
+
+                <div class="question-text" id="questionText">
+                    Memuat pertanyaan...
+                </div>
+
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be generated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE 4: FEEDBACK ===== -->
+    <div class="page" id="pageFeedback">
+        <div class="feedback-container">
+            <div class="feedback-emoji" id="feedbackEmoji">🎉</div>
+            <h2 class="feedback-title correct" id="feedbackTitle">Benar!</h2>
+            <div class="points-earned" id="pointsEarned">+100 POIN</div>
+            <p class="feedback-message" id="feedbackMessage">
+                Excellent! Anda menunjukkan layanan prima.
+            </p>
+            <div class="explanation-box">
+                <h4>💡 Penjelasan:</h4>
+                <p id="explanationText">
+                    Penjelasan akan muncul di sini.
+                </p>
+            </div>
+            <button class="btn-primary" onclick="nextQuestion()" id="nextBtn">
+                Lanjutkan →
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== PAGE 5: RESULT ===== -->
+    <div class="page" id="pageResult">
+        <div class="result-container">
+            <div class="trophy" id="trophyIcon">🏆</div>
+            <h2 style="font-size: 2rem; color: #1e3c72;">Permainan Selesai!</h2>
+            <div class="final-score">
+                <span id="finalScore">0</span> poin
+            </div>
+            <div class="rating-stars" id="ratingStars"></div>
+            <p class="result-message" id="resultMessage">Hasil akan muncul di sini</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="correctCount">0</div>
+                    <div class="stat-label">Benar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="wrongCount">0</div>
+                    <div class="stat-label">Salah</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Akurasi</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="restartGame()">🔄 Main Lagi</button>
+                <button class="btn-secondary" onclick="goToMenu()">📋 Menu</button>
+                <button class="btn-outline" onclick="goToOpening()">🏠 Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== GAME DATA =====
+        const questions = {
+            checkin: [
+                {
+                    icon: "🛎️",
+                    scenario: "Seorang tamu VIP datang dengan koper besar dan terlihat sangat lelah setelah penerbangan 15 jam. Ia memesan suite presidential.",
+                    question: "Apa langkah pertama yang paling tepat saat menyambut tamu ini?",
+                    options: [
+                        "Langsung minta KTP & uang deposit",
+                        "Sambut dengan senyum, bantu koper, & tawarkan welcome drink",
+                        "Suruh menunggu karena belum waktu check-in",
+                        "Beri formulir panjang untuk diisi sendiri"
+                    ],
+                    correct: 1,
+                    explanation: "Tamu VIP harus disambut dengan layanan exceptional. SOP: sambut → bantu barang → welcome drink → proses check-in. Ini menciptakan first impression yang positif.",
+                    points: 100
+                },
+                {
+                    icon: "📋",
+                    scenario: "Seorang tamu mengeluh kamar yang diberikan bau asap rokok, padahal ia memesan kamar non-smoking.",
+                    question: "Bagaimana Anda menangani situasi ini dengan profesional?",
+                    options: [
+                        "Katakan 'Maaf, hotel kami smoking area'",
+                        "Tawarkan upgrade kamar atau pindah ke kamar bersih + kompensasi",
+                        "Suruh tamu tunggu 2 jam untuk cleaning",
+                        "Bilang itu bukan salah Anda"
+                    ],
+                    correct: 1,
+                    explanation: "Service recovery adalah kunci. Tawarkan solusi immediate (pindah kamar) + kompensasi (voucher/discount) untuk mempertahankan kepuasan tamu.",
+                    points: 150
+                },
+                {
+                    icon: "🔑",
+                    scenario: "Seorang tamu ingin check-in lebih awal pukul 10:00 AM, padahal check-in standard adalah 2:00 PM.",
+                    question: "Kebijakan apa yang paling tepat diterapkan?",
+                    options: [
+                        "Tolak mentah-mentah, suruh tunggu sampai 2 PM",
+                        "Cek ketersediaan kamar, jika ada biarkan early check-in dengan senyum",
+                        "Kenakan biaya 50% tanpa penjelasan",
+                        "Suruh tamu duduk di lobby tanpa bantuan"
+                    ],
+                    correct: 1,
+                    explanation: "Early check-in subject to availability. Jika kamar ready, layani dengan senyum (guest satisfaction priority). Jika belum ready, jelaskan dengan empathy & tawarkan tempat menunggu nyaman.",
+                    points: 120
+                },
+                {
+                    icon: "💳",
+                    scenario: "Sistem pembayaran offline. Tamu ingin check-out tapi kartu kreditnya tidak bisa diproses.",
+                    question: "Apa solusi terbaik dalam situasi ini?",
+                    options: [
+                        "Tahan tamu di resepsionis sampai kartu berfungsi",
+                        "Tawarkan alternatif: tunai, transfer, atau billing ke perusahaan",
+                        "Suruh tamu tinggalkan barang sebagai jaminan",
+                        "Marahi tamu karena mengganggu sistem"
+                    ],
+                    correct: 1,
+                    explanation: "Flexible payment options menunjukkan understanding. Tawarkan semua alternatif yang tersedia & jaga rapport positif meski ada technical issue.",
+                    points: 130
+                },
+                {
+                    icon: "⭐",
+                    scenario: "Seorang tamu merasa tidak puas dan menuntut refund penuh setelah menginap 1 malam dari 3 malam.",
+                    question: "Strategi service recovery mana yang paling efektif?",
+                    options: [
+                        "Tolak semua tuntutan",
+                        "Dengarkan keluhan, minta maaf, investigate, & tawarkan fair solution",
+                        "Hindari tamu dan suruh hubungi manager besok",
+                        "Beri refund tanpa bertanya apa masalahnya"
+                    ],
+                    correct: 1,
+                    explanation: "LEARN model: Listen → Empathize → Apologize → Resolve → Notify. Dengarkan dulu, baru tentukan fair resolution. Refund penuh tanpa investigate bisa disalahgunakan.",
+                    points: 200
+                }
+            ],
+            service: [
+                {
+                    icon: "🍽️",
+                    scenario: "Seorang tamu memesan makanan room service pukul 11:00 PM. Menu yang diminta sudah habis.",
+                    question: "Apa respons terbaik untuk situasi ini?",
+                    options: [
+                        "Katakan 'Sudah habis, tidak bisa'",
+                        "Tawarkan alternatif menu sejenis + complimentary dessert",
+                        "Suruh tamu pesan dari luar hotel",
+                        "Abaikan pesanan karena sudah larut"
+                    ],
+                    correct: 1,
+                    explanation: "Upselling dengan empathy. Tawarkan alternatif terbaik + complimentary item sebagai apology. Ini mengubah disappointment menjadi delight.",
+                    points: 120
+                },
+                {
+                    icon: "🧹",
+                    scenario: "Seorang tamu menemukan rambut di kamar mandi saat baru check-in.",
+                    question: "Tindakan housekeeping mana yang paling tepat?",
+                    options: [
+                        "Biarkan saja, tamu bisa membersihkan sendiri",
+                        "Mintalah maaf, bersihkan segera, & beri voucher kompensasi",
+                        "Salahkan housekeeping staff di depan tamu",
+                        "Tawarkan pindah kamar tanpa minta maaf"
+                    ],
+                    correct: 1,
+                    explanation: "Own the problem. Minta maaf (meski bukan salah pribadi), perbaiki segera, & beri gesture of goodwill. Jangan blame staff di depan tamu.",
+                    points: 150
+                },
+                {
+                    icon: "🏊",
+                    scenario: "Seorang tamu bertanya tentang fasilitas hotel. Ia menginap dengan 2 anak kecil.",
+                    question: "Rekomendasi fasilitas mana yang paling personal?",
+                    options: [
+                        "Berikan brosur umum semua fasilitas",
+                        "Highlight kids pool, kids club, & family restaurant + offer kids amenities",
+                        "Rekomendasikan bar & nightclub",
+                        "Katakan tidak ada fasilitas untuk anak"
+                    ],
+                    correct: 1,
+                    explanation: "Personalized service: identify guest profile (family with kids) & tailor recommendations. Offer kids welcome pack (coloring book, cookies) untuk extra delight.",
+                    points: 130
+                },
+                {
+                    icon: "📞",
+                    scenario: "Telepon dari kamar tamu berdering pukul 2:00 AM. Tamu mengeluh suara dari kamar sebelah sangat berisik.",
+                    question: "Protokel night audit mana yang harus dijalankan?",
+                    options: [
+                        "Katakan 'Silahkan hubungi besok pagi'",
+                        "Mintalah maaf, investigate segera, & resolve dengan diplomacy",
+                        "Abaikan karena sudah malam",
+                        "Teriaki tamu sebelah untuk diam"
+                    ],
+                    correct: 1,
+                    explanation: "24/7 service commitment. Night staff harus handle all complaints dengan empathy. Investigate → Mediate → Follow-up. Document untuk morning handover.",
+                    points: 180
+                },
+                {
+                    icon: "🎁",
+                    scenario: "Seorang tamu menginap untuk merayakan anniversary pernikahan ke-25.",
+                    question: "Inisiatif surprise & delight mana yang paling memorable?",
+                    options: [
+                        "Berikan invoice tanpa ucapan apa-apa",
+                        "Kirim champagne & chocolate ke kamar + handwritten anniversary card",
+                        "Katakan 'Selamat' saja di resepsionis",
+                        "Kenakan biaya tambahan untuk dekorasi"
+                    ],
+                    correct: 1,
+                    explanation: "Anticipate special occasions dari reservation notes. Surprise & delight creates loyal guests & positive reviews. Small investment (champagne + card) = huge ROI.",
+                    points: 200
+                }
+            ],
+            emergency: [
+                {
+                    icon: "🔥",
+                    scenario: "Alarm kebakaran berbunyi! Tamu panik di lantai 5. Lift sudah di-lockdown.",
+                    question: "Protokel evakuasi mana yang harus diikuti?",
+                    options: [
+                        "Suruh tamu tunggu di kamar",
+                        "Guide tamu via tangga darurat, stay calm, & head count di assembly point",
+                        "Biarkan tamu cari jalan sendiri",
+                        "Gunakan lift untuk evakuasi cepat"
+                    ],
+                    correct: 1,
+                    explanation: "R.I.D.E: Report → Investigate → Determine → Evacuate. NEVER use lift during fire. Stay calm, guide guests via stairs, head count at assembly point, report to fire marshal.",
+                    points: 200
+                },
+                {
+                    icon: "💊",
+                    scenario: "Seorang tamu meminta obat pusing di tengah malam. Front office tidak memiliki obat.",
+                    question: "Tindakan mana yang paling bertanggung jawab?",
+                    options: [
+                        "Beri obat dari kotak P3K pribadi",
+                        "Hubungi doctor on call / bantu cari apotek 24 jam + offer room service comfort food",
+                        "Katakan 'Kami tidak bisa bantu'",
+                        "Suruh tamu cari sendiri di luar"
+                    ],
+                    correct: 1,
+                    explanation: "Never give medication (liability issue). Best practice: have doctor on call list, nearest 24hr pharmacy info, & offer comfort (warm towel, ginger tea) while arranging help.",
+                    points: 180
+                },
+                {
+                    icon: "🔓",
+                    scenario: "Seorang tamu terkunci di luar kamarnya pukul 1:00 AM dalam pakaian tidur.",
+                    question: "Service recovery mana yang paling cepat & empatik?",
+                    options: [
+                        "Suruh tunggu 30 menit karena maintenance pulang",
+                        "Beri kunci master segera + offer robe & hot beverage sementara",
+                        "Katakan 'Ini salah Anda sendiri'",
+                        "Kenakan biaya pembukaan kamar"
+                    ],
+                    correct: 1,
+                    explanation: "Empathy first. Guest is embarrassed & uncomfortable. Speed + comfort: provide immediate access + dignity (robe) + comfort (hot drink). No blame, no charge.",
+                    points: 150
+                },
+                {
+                    icon: "👶",
+                    scenario: "Seorang tamu melaporkan anaknya hilang di area kolam renang.",
+                    question: "Protokel missing person (minor) mana yang harus diaktifkan?",
+                    options: [
+                        "Katakan 'Nanti juga muncul'",
+                        "Code Adam: Seal exits, announce description, search teams, notify security & police",
+                        "Biarkan orang tua cari sendiri",
+                        "Tunggu 24 jam sebelum lapor polisi"
+                    ],
+                    correct: 1,
+                    explanation: "Code Adam protocol (adapted from Walmart): immediate action within 10 minutes. Seal exits, PA announcement with description, organized search, notify authorities. Speed is critical.",
+                    points: 250
+                },
+                {
+                    icon: "⚡",
+                    scenario: "Listrik padam di seluruh hotel saat malam hari. Lift macet dengan tamu di dalam.",
+                    question: "Crisis management mana yang paling komprehensif?",
+                    options: [
+                        "Biarkan engineering handle sendiri",
+                        "Activate crisis team: engineering (generator), security (lift rescue), FO (guest communication), GM (stakeholder update)",
+                        "Katakan tamu 'Tunggu saja' tanpa info",
+                        "Evakuasi semua tamu ke luar hotel"
+                    ],
+                    correct: 1,
+                    explanation: "Crisis management requires coordinated response: 1) Guest safety (lift rescue), 2) Communication (update guests every 15 min), 3) Operations (backup power), 4) Documentation. Never leave guests in the dark.",
+                    points: 250
+                }
+            ]
+        };
+
+        // Generate mixed questions
+        questions.mixed = [];
+        const allQuestions = [...questions.checkin, ...questions.service, ...questions.emergency];
+        const shuffled = allQuestions.sort(() => Math.random() - 0.5);
+        questions.mixed = shuffled.slice(0, 8);
+
+        // ===== GAME STATE =====
+        let gameState = {
+            mode: 'mixed',
+            difficulty: 'easy',
+            currentQuestion: 0,
+            score: 0,
+            correct: 0,
+            wrong: 0,
+            timer: null,
+            timeLeft: 30,
+            questions: [],
+            answered: false
+        };
+
+        const difficultySettings = {
+            easy: { time: 45, pointsMultiplier: 1 },
+            medium: { time: 30, pointsMultiplier: 1.5 },
+            hard: { time: 20, pointsMultiplier: 2 }
+        };
+
+        // ===== NAVIGATION =====
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(function(p) {
+                p.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function goToOpening() {
+            showPage('pageOpening');
+            createStars();
+        }
+
+        function goToMenu() {
+            showPage('pageMenu');
+        }
+
+        function goToGame() {
+            showPage('pageGame');
+        }
+
+        function goToFeedback() {
+            showPage('pageFeedback');
+        }
+
+        function goToResult() {
+            showPage('pageResult');
+        }
+
+        // ===== SETUP =====
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        function createFloatingIcons() {
+            const container = document.getElementById('floatingIcons');
+            if (!container) return;
+            const icons = ['🏨', '🛎️', '🍽️', '⭐', '🗝️', '📋', '🏊', '🛏️'];
+            for (let i = 0; i < 8; i++) {
+                const icon = document.createElement('div');
+                icon.className = 'float-icon';
+                icon.textContent = icons[i];
+                icon.style.left = Math.random() * 90 + '%';
+                icon.style.top = Math.random() * 80 + '%';
+                icon.style.animationDelay = Math.random() * 5 + 's';
+                icon.style.animationDuration = (5 + Math.random() * 5) + 's';
+                container.appendChild(icon);
+            }
+        }
+
+        function setDifficulty(diff) {
+            gameState.difficulty = diff;
+            document.querySelectorAll('.diff-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            if (diff === 'easy') document.getElementById('diffEasy').classList.add('active');
+            if (diff === 'medium') document.getElementById('diffMedium').classList.add('active');
+            if (diff === 'hard') document.getElementById('diffHard').classList.add('active');
+        }
+
+        function startGame(mode) {
+            gameState.mode = mode;
+            gameState.currentQuestion = 0;
+            gameState.score = 0;
+            gameState.correct = 0;
+            gameState.wrong = 0;
+            gameState.answered = false;
+
+            // Get questions based on mode
+            let questionPool = questions[mode] || questions.mixed;
+
+            // Shuffle and select
+            const qCount = mode === 'mixed' ? 8 : 5;
+            const shuffled = questionPool.slice().sort(function() { return Math.random() - 0.5; });
+            gameState.questions = shuffled.slice(0, qCount);
+
+            updateGameDisplay();
+            goToGame();
+            loadQuestion();
+        }
+
+        function updateGameDisplay() {
+            document.getElementById('currentScore').textContent = '0';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        function loadQuestion() {
+            const q = gameState.questions[gameState.currentQuestion];
+            const settings = difficultySettings[gameState.difficulty];
+
+            if (!q) return;
+
+            document.getElementById('scenarioIcon').textContent = q.icon;
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('questionNum').textContent = gameState.currentQuestion + 1;
+            document.getElementById('totalQuestions').textContent = gameState.questions.length;
+            document.getElementById('currentScore').textContent = gameState.score;
+
+            // Progress bar
+            const progress = ((gameState.currentQuestion) / gameState.questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Options
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach(function(opt, idx) {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = '<span class="opt-letter">' + letters[idx] + '</span><span>' + opt + '</span>';
+                btn.onclick = function() { selectAnswer(idx); };
+                optionsGrid.appendChild(btn);
+            });
+
+            gameState.answered = false;
+
+            // Timer
+            gameState.timeLeft = settings.time;
+            startTimer();
+        }
+
+        function startTimer() {
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+                gameState.timer = null;
+            }
+
+            const circle = document.getElementById('timerCircle');
+            const text = document.getElementById('timerText');
+            const settings = difficultySettings[gameState.difficulty];
+            const circumference = 2 * Math.PI * 35;
+
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = 0;
+            circle.style.stroke = '#667eea';
+            text.style.color = '#667eea';
+            text.textContent = gameState.timeLeft;
+
+            gameState.timer = setInterval(function() {
+                gameState.timeLeft--;
+                text.textContent = gameState.timeLeft;
+
+                const offset = circumference - (gameState.timeLeft / settings.time) * circumference;
+                circle.style.strokeDashoffset = offset;
+
+                if (gameState.timeLeft <= 5) {
+                    circle.style.stroke = '#dc3545';
+                    text.style.color = '#dc3545';
+                }
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timer);
+                    gameState.timer = null;
+                    selectAnswer(-1);
+                }
+            }, 1000);
+        }
+
+        function selectAnswer(selectedIdx) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+
+            if (gameState.timer) {
+                clearInterval(gameState.timer);
+                gameState.timer = null;
+            }
+
+            const q = gameState.questions[gameState.currentQuestion];
+            const isCorrect = selectedIdx === q.correct;
+            const settings = difficultySettings[gameState.difficulty];
+
+            // Disable all buttons and show correct/wrong
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(function(btn, idx) {
+                btn.classList.add('disabled');
+                if (idx === q.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === selectedIdx && !isCorrect) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            // Calculate points
+            let points = 0;
+            if (isCorrect) {
+                points = Math.round(q.points * settings.pointsMultiplier);
+                gameState.score += points;
+                gameState.correct++;
+            } else {
+                gameState.wrong++;
+            }
+
+            // Update score display
+            document.getElementById('currentScore').textContent = gameState.score;
+
+            // Show feedback after delay
+            setTimeout(function() {
+                showFeedback(isCorrect, points, q);
+            }, 1500);
+        }
+
+        function showFeedback(isCorrect, points, question) {
+            const emoji = document.getElementById('feedbackEmoji');
+            const title = document.getElementById('feedbackTitle');
+            const pointsDiv = document.getElementById('pointsEarned');
+            const message = document.getElementById('feedbackMessage');
+            const explanation = document.getElementById('explanationText');
+            const btn = document.getElementById('nextBtn');
+
+            const correctEmojis = ['🎉', '⭐', '👏', '🔥', '💯'];
+            const wrongEmojis = ['😅', '🤔', '💪', '📚', '🎯'];
+
+            if (isCorrect) {
+                emoji.textContent = correctEmojis[Math.floor(Math.random() * correctEmojis.length)];
+                title.textContent = 'Benar!';
+                title.className = 'feedback-title correct';
+                pointsDiv.textContent = '+' + points + ' POIN';
+                pointsDiv.style.color = '#ffd700';
+                message.textContent = 'Excellent! Anda menunjukkan layanan prima dan profesionalisme.';
+            } else {
+                emoji.textContent = wrongEmojis[Math.floor(Math.random() * wrongEmojis.length)];
+                title.textContent = points === 0 ? 'Waktu Habis!' : 'Belum Tepat';
+                title.className = 'feedback-title wrong';
+                pointsDiv.textContent = '+0 POIN';
+                pointsDiv.style.color = '#dc3545';
+                message.textContent = points === 0 
+                    ? 'Waktu telah habis! Cobalah lebih cepat di soal berikutnya.'
+                    : 'Jangan menyerah! Pelajari penjelasan untuk meningkatkan skill Anda.';
+            }
+
+            explanation.textContent = question.explanation;
+
+            // Update button text
+            if (gameState.currentQuestion >= gameState.questions.length - 1) {
+                btn.textContent = 'Lihat Hasil →';
+            } else {
+                btn.textContent = 'Lanjutkan →';
+            }
+
+            goToFeedback();
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion++;
+
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                showFinalResult();
+            } else {
+                goToGame();
+                loadQuestion();
+            }
+        }
+
+        function showFinalResult() {
+            const total = gameState.questions.length;
+            const accuracy = total > 0 ? Math.round((gameState.correct / total) * 100) : 0;
+
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('correctCount').textContent = gameState.correct;
+            document.getElementById('wrongCount').textContent = gameState.wrong;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+
+            // Stars rating
+            const starsContainer = document.getElementById('ratingStars');
+            starsContainer.innerHTML = '';
+            const starCount = accuracy >= 90 ? 5 : accuracy >= 70 ? 4 : accuracy >= 50 ? 3 : accuracy >= 30 ? 2 : 1;
+
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('span');
+                star.className = 'star-rating';
+                star.textContent = i < starCount ? '⭐' : '☆';
+                star.style.animationDelay = (i * 0.2) + 's';
+                starsContainer.appendChild(star);
+            }
+
+            // Trophy and message
+            const trophy = document.getElementById('trophyIcon');
+            const message = document.getElementById('resultMessage');
+
+            if (accuracy >= 90) {
+                trophy.textContent = '🏆';
+                message.textContent = 'Sempurna! Anda adalah Manajer Hotel Bintang 5!';
+                createConfetti();
+            } else if (accuracy >= 70) {
+                trophy.textContent = '🥈';
+                message.textContent = 'Hebat! Anda adalah Supervisor Hotel yang Handal!';
+            } else if (accuracy >= 50) {
+                trophy.textContent = '🥉';
+                message.textContent = 'Bagus! Anda adalah Staff Hotel yang Berpotensi!';
+            } else {
+                trophy.textContent = '📚';
+                message.textContent = 'Terus Belajar! Anda akan menjadi lebih baik!';
+            }
+
+            goToResult();
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(confetti);
+            }
+
+            setTimeout(function() {
+                if (container) container.innerHTML = '';
+            }, 5000);
+        }
+
+        function restartGame() {
+            startGame(gameState.mode);
+        }
+
+        // ===== INITIALIZE =====
+        document.addEventListener('DOMContentLoaded', function() {
+            createStars();
+            createFloatingIcons();
+        });
+    </script>
+</body>
+</html>
